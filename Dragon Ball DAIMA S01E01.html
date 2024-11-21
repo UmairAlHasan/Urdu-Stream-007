@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Enhanced Player</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet"
+        href="https://raw.githack.com/UmairAlHasan/AR-Player/refs/heads/main/Netflix%20Skin%20v2.0.6.css">
+    <style>
+        #player {
+            position: absolute;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        #center-ad {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 250px;
+            height: 250px;
+            background-color: #ccc;
+            display: block;
+            z-index: 9999;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 30px;
+            height: 30px;
+            background-color: #ff0000;
+            color: #000;
+            font-size: 24px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+        #skipBtn,
+        #skipoutro {
+            position: fixed;
+            font-family: "Roboto", sans-serif;
+            right: 0px;
+            bottom: 140px;
+            padding: 10px 17px;
+            background-color: #000000;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px 0 0 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        #skipBtn:hover,
+        #skipoutro:hover {
+            background-color: #ff0000;
+            box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        #skipBtn,
+        #skipoutro {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="player"></div>
+
+    <button id="skipBtn">Skip Intro <i class="fa fa-forward"></i></button>
+    <button id="skipoutro">Skip Outro <i class="fa fa-forward"></i></button>
+
+    <script src="https://raw.githack.com/UmairAlHasan/AR-Player/refs/heads/main/JWPlayer-8.21.1.js"></script>
+    <script>
+        const sources = {
+            default: "https://firebasestorage.googleapis.com/v0/b/ar7-cloud.appspot.com/o/Bragon%20Ball%20DAIMA%2FDragon%20Ball%20DAIMA%20S01E01.mp4?alt=media&token=c2f0ed5d-473d-4813-a8a7-4c80ebb98c41",
+            quality: [
+                { file: "https://firebasestorage.googleapis.com/v0/b/ar7-cloud.appspot.com/o/Bragon%20Ball%20DAIMA%2FDragon%20Ball%20DAIMA%20S01E01.mp4?alt=media&token=c2f0ed5d-473d-4813-a8a7-4c80ebb98c41", label: "1080p" },
+                { file: "https://firebasestorage.googleapis.com/v0/b/ar7-cloud.appspot.com/o/Bragon%20Ball%20DAIMA%2FDragon%20Ball%20DAIMA%20S01E01.mp4?alt=media&token=c2f0ed5d-473d-4813-a8a7-4c80ebb98c41", label: "720p" },
+                { file: "https://firebasestorage.googleapis.com/v0/b/ar7-cloud.appspot.com/o/Bragon%20Ball%20DAIMA%2FDragon%20Ball%20DAIMA%20S01E01.mp4?alt=media&token=c2f0ed5d-473d-4813-a8a7-4c80ebb98c41", label: "480p" }
+            ]
+        };
+
+        const subtitles = [
+            { file: "https://raw.githubusercontent.com/UmairAlHasan/Urdu-Stream-007/refs/heads/main/Dragon%20Ball%20DAIMA%20S01E01%20(English).srt", label: "English", kind: "captions", default: true },
+            { file: "https://raw.githubusercontent.com/UmairAlHasan/Urdu-Stream-007/refs/heads/main/Dragon%20Ball%20DAIMA%20S01E01%20(Urdu).srt", label: "Urdu", kind: "captions" }
+        ];
+
+        const audios = [
+            { file: "link-to-audio-track-en.mp4", label: "Japanese" },
+            { file: "https://firebasestorage.googleapis.com/v0/b/ar7-cloud.appspot.com/o/Bragon%20Ball%20DAIMA%2FDragon%20Ball%20DAIMA%20S01E01.mp4?alt=media&token=c2f0ed5d-473d-4813-a8a7-4c80ebb98c41", label: "Urdu" }
+        ];
+
+        let playerInstance = jwplayer("player").setup({
+            controls: true,
+            sharing: true,
+            displaytitle: true,
+            displaydescription: true,
+            autostart: true,
+            mute: false,
+            abouttext: "",
+            aboutlink: "",
+            skin: { name: "netflix" },
+            playlist: [{
+                title: "",
+                description: "",
+                image: '',
+                sources: sources.quality,
+                tracks: subtitles
+            }],
+            advertising: {
+                client: "vast",
+                schedule: [{
+                    offset: "pre",
+                    tag: ""
+                }]
+            }
+        });
+
+        // Intro and Outro skip logic
+        const introStartTime = 0;  
+        const introEndTime = 0;   
+        const outroStartTime = 0; 
+        const outroEndTime = 0;   
+
+        const skipBtn = document.getElementById('skipBtn');
+        const skipOutroBtn = document.getElementById('skipoutro');
+
+        playerInstance.on('time', function (event) {
+            const currentTime = event.position;
+
+            if (currentTime >= introStartTime && currentTime <= introEndTime) {
+                skipBtn.style.display = 'block';
+            } else {
+                skipBtn.style.display = 'none';
+            }
+
+            if (currentTime >= outroStartTime && currentTime <= outroEndTime) {
+                skipOutroBtn.style.display = 'block';
+            } else {
+                skipOutroBtn.style.display = 'none';
+            }
+        });
+
+        skipBtn.addEventListener('click', function () {
+            playerInstance.seek(introEndTime);
+        });
+
+        skipOutroBtn.addEventListener('click', function () {
+            playerInstance.seek(outroEndTime);
+        });
+
+        // Audio track selection
+        playerInstance.on('ready', function () {
+            audios.forEach(audio => {
+                const button = document.createElement('button');
+                button.innerText = `Audio: ${audio.label}`;
+                button.addEventListener('click', () => {
+                    playerInstance.load([{
+                        file: audio.file,
+                        tracks: subtitles
+                    }]);
+                    playerInstance.play();
+                });
+                document.body.appendChild(button);
+            });
+        });
+    </script>
+</body>
+</html>
