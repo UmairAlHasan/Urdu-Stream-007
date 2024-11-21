@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Enhanced Player</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet"
+        href="https://raw.githack.com/UmairAlHasan/AR-Player/refs/heads/main/Netflix%20Skin%20v2.0.6.css">
+    <style>
+        #player {
+            position: absolute;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        #audio-selector {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            z-index: 1000;
+            background: #000;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #audio-selector:hover {
+            background-color: #ff0000;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="player"></div>
+
+    <!--<button id="audio-selector">Change Audio</button>-->
+
+    <script src="https://raw.githack.com/UmairAlHasan/AR-Player/refs/heads/main/JWPlayer-8.21.1.js"></script>
+    <script>
+        // Video and audio sources
+        const videoSources = {
+            default: [
+                { file: "https://firebasestorage.googleapis.com/v0/b/ar7-cloud.appspot.com/o/Bragon%20Ball%20DAIMA%2FDragon%20Ball%20DAIMA%20S01E01.mp4?alt=media&token=c2f0ed5d-473d-4813-a8a7-4c80ebb98c41", label: "Urdu" },
+                { file: "https://firebasestorage.googleapis.com/v0/b/ar7-cloud.appspot.com/o/Bragon%20Ball%20DAIMA%2FDragon%20Ball%20DAIMA%20S01E01%20(JP).mp4?alt=media&token=47813da0-545b-4d39-ad93-4136501e9dd4", label: "Japanese" }
+            ]
+        };
+
+        const subtitles = [
+            { file: "https://raw.githubusercontent.com/UmairAlHasan/Urdu-Stream-007/refs/heads/main/Dragon%20Ball%20DAIMA%20S01E01%20(Urdu).srt", label: "Urdu", kind: "captions", default: true },
+            { file: "https://raw.githubusercontent.com/UmairAlHasan/Urdu-Stream-007/refs/heads/main/Dragon%20Ball%20DAIMA%20S01E01%20(English).srt", label: "English", kind: "captions" }
+        ];
+
+        // Initialize JW Player with the default audio track
+        let currentAudioIndex = 0;
+        let playerInstance = jwplayer("player").setup({
+            controls: true,
+            sharing: true,
+            displaytitle: true,
+            displaydescription: true,
+            autostart: true,
+            mute: false,
+            abouttext: "",
+            aboutlink: "",
+            skin: { name: "netflix" },
+            playlist: [{
+                title: "",
+                description: "",
+                image: '',
+                file: videoSources.default[currentAudioIndex].file,
+                tracks: subtitles
+            }]
+        });
+
+        // Handle audio track switching
+        document.getElementById("audio-selector").addEventListener("click", function () {
+            currentAudioIndex = (currentAudioIndex + 1) % videoSources.default.length;
+            const selectedAudio = videoSources.default[currentAudioIndex];
+
+            playerInstance.load([{
+                file: selectedAudio.file,
+                tracks: subtitles
+            }]);
+
+            playerInstance.play();
+            alert(`Switched to: ${selectedAudio.label}`);
+        });
+    </script>
+</body>
+
+</html>
